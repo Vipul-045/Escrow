@@ -74,9 +74,11 @@ impl<'info> CancelEscrow <'info>{
         transfer(cpi_ctx, escrow.initializer_amount)?;
 
         emit_cpi!(EscrowCanceled{
-            
-        }
+            initializer: escrow.initializer,
+            receiver: escrow.receiver,
+            mint: escrow.initializer_mint,
+            amount: escrow.initializer_amount,
 
-        )
+        })
     }
 }
