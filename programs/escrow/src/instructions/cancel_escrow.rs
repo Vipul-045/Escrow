@@ -1,0 +1,82 @@
+use anchor_lang::prelude::*;
+
+use anchor_spl::token::{
+    TokenAccount,
+    Token,
+    Mint,
+    Transfer as TokenTransfer,
+    Transfer,
+};
+
+#[event(cpi)]
+#[derive(Accounts)]
+pub struct CancelEscrow <'info> {
+    #[account(
+        mut, 
+        has_one: initializer,
+        has_one: initializer_mint,
+        signer: initializer
+    )]
+    pub escrow: Account<'info, Account>,
+
+    #[accounts(mut)]
+    pub initializer: Signer<'info>,
+
+    #[account(
+        seeds: [b"initializer_vault", escrow_key().as_ref()],
+        bump
+    )]
+    pub initializer_vault_authority: UncheckedAccount<'info>,
+
+    #[account(
+        mut,
+        associated_token::mint = initializer_mint,
+        associated_token::authority = initializer_vault_authority,
+    )]
+    pub initializer_vault: UncheckedAccount<'info>,
+
+    #[account(
+        mut,
+        associated_token::mint = initializer_mint,
+        associated_token::authority + initializer,
+    )]
+    pub initializer_token_account: Account<'info, TokenAccount>,
+
+    pub initializer_mint: Account<'info, Mint>,
+
+    pub token_program: Program<'info, Token>
+}
+
+impl<'info> CancelEscrow <'info>{
+    pub fn CancelEscrow(ctx: Context<CancelEscrow>) -> Result<()>{
+        let escrow = &ctx.accounts.escrow;
+
+        let clock = Clock::get()?;
+        require!(clock.unix_timestamp > escrow.expiry , EscrowError::EscrowNotExpired);
+
+        let escrow_key = escrow.key();
+        let initializer_vault_bump = ctx.bumps.initializer.vault.authority;
+        let seeds = &[b"initializer_vault", escrow_key.as_ref(), &[initializer_vault_bump]];
+        let signer = &[&seeds[..]];
+
+        let cpi_accounts = TokenTransfer {
+            from: ctx.accounts.initializer_vault.to_account_info(),
+            to: ctx.accounts.initializer_token_account.to_account_info(),
+            authority: ctx.accounts.initializer_vault_authority.to_account_info(),
+        };
+
+        let cpi_ctx = CpiContext:: new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            cpi_accounts,
+            signer,
+        );
+
+        transfer(cpi_ctx, escrow.initializer_amount)?;
+
+        emit_cpi!(EscrowCanceled{
+            
+        }
+
+        )
+    }
+}
