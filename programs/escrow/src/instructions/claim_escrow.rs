@@ -13,4 +13,16 @@ pub struct ClaimEscrow <'info>{
         has_one = receiver_mint,
         close = initializer
     )]
+
+    pub escrow: Account<'info, Escrow>,
+
+    #[accounts(mut)]
+    pub initializer: SystemAccount<'info>,
+
+    #[accounts(mut)]
+    pub receiver: Signer<'info>,
+
+    
+
+
 }
