@@ -21,7 +21,7 @@ pub struct InitializeEscrow<'info> {
     pub initializer_token_account: Account<'info, TokenAccount>,
 
     #[account(
-    seeds: [b"initializer_vault", escrow.key().as.ref()],
+    seeds: [b"initializer_vault", escrow.key().as_ref()],
     bump
 )]
     pub initializer_vault_authority: UncheckedAccount<'info>,
