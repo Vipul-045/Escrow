@@ -69,6 +69,25 @@ pub struct ClaimEscrow <'info>{
     )]
     pub initializer_token_account: Account<'info, TokenAccount>,
 
-    
+    #[account(
+        mut,
+        associated_token:: mint = initializer_mint,
+        associated_token:: authority = escrow.fee_collector
+    )]
+    pub initializer_fee_collector: Account<'info, TokenAccount>,
+
+    #[account(
+        mut,
+        associated_token:: mint = reciver_mint,
+        associated_token:: authority = escrow.fee_collector
+    )]
+    pub receiver_fee_collector: Account<'info, TokenAccount>,
+
+    pub initializer_mint: Account<'info, Mint>,
+
+    pub receiver_mint: Account<'info, Mint>,
+
+    pub token_program: Program<'info, Token>
+
 
 }
