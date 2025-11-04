@@ -48,7 +48,18 @@ pub struct ClaimEscrow <'info>{
     )]
     pub receiver_vault: Account<'info, TokenAccount>,
 
-    
+    #[account(
+        mut,
+        associated_token:: mint = initializer_mint,
+        associated_token:: authority = receiver,
+    )]
+    pub receiver_initializer_token_account: Account<'info, TokenAccount>,
 
+    #[account(
+        mut, 
+        associated_token:: mint = receiver_mint,
+        associated_token:: authority = receiver,
+    )]
+    pub receiver_token_account: Account<'info, TokenAccount>,
 
 }
