@@ -89,5 +89,11 @@ pub struct ClaimEscrow <'info>{
 
     pub token_program: Program<'info, Token>
 
+}
 
+impl<'info> ClaimEscrow<'info> {
+    pub fn claim_escrow(cyx: Context<ClaimEscrow>) -> Result<()>{
+        let escrow = &ctx.accounts.escrow;
+        
+    }
 }
