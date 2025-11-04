@@ -94,6 +94,8 @@ pub struct ClaimEscrow <'info>{
 impl<'info> ClaimEscrow<'info> {
     pub fn claim_escrow(cyx: Context<ClaimEscrow>) -> Result<()>{
         let escrow = &ctx.accounts.escrow;
-        
-    }
+        let clock = Clock::get()?;
+
+        require!()
+        }
 }
