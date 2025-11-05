@@ -96,6 +96,33 @@ impl<'info> ClaimEscrow<'info> {
         let escrow = &ctx.accounts.escrow;
         let clock = Clock::get()?;
 
-        require!()
-        }
+        require!(clock.unix_timestamp <= escrow.expiry, Escrow.Error::EscrowExpired);
+
+        let escrow_key = escrow.key();
+
+        let initializer_fee = (escrow.initializer_amount as u128)
+            .checked_mul(escrow.fee_basis_points as u128)
+            .unwrap()
+            .checked_div(10000)
+            .unwrap() as u64;
+
+        let receiver_fee = (escrow.receiver_amount as u128)
+            .checked_mul(escrow.fee_basis_points as u128)
+            .unwrap()
+            .checked_div(10000)
+            .unwrap() as u64;
+
+        let initializer_amount_after_fee = escrow.initializer_amount.checked_sub(initializer_fee).unwrap();
+        let receiver_amount_after_fee = escrow.receiver_amount.checked_sub(receiver_fee).unwrap();
+
+        let receiver_deposit_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            TokenTransfer{
+                from: ctx.accounts.receiver_token_account.to_account_info(),
+                to: ctx.accounts.receiver_token_account.to_account_info(),
+                authority: ctx.accounts.receiver.to_account_info(),
+            },
+        );
+
+        
 }
