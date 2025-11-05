@@ -141,6 +141,19 @@ impl<'info> ClaimEscrow<'info> {
         );
         transfer(initializer_to_receiver_ctx, initializer_amount_after_fee);
 
+        if initializer_fee > 0 {
+            let initializer_fee_ctx = CpiContext::new(
+                ctx.accounts.token_program.to_account_info(),
+                TokenTransfer{
+                    from: ctx.accounts.initializer_vault.to_account_info(),
+                    to: ctx.accounts.initializer_fee_collector.to_account_info(),
+                    authority: ctx.accounts.initializer_vault_authority.to_account_info(),
+                },
+                initializer_signer,
+            );
+            transfer(initilizer_fee_ctx, initializer_fee)
+        }
+
         
 
 
