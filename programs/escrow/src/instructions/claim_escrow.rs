@@ -67,7 +67,7 @@ pub struct ClaimEscrow <'info>{
         associated_token:: mint = receiver_mint,
         associated_token:: authority = initializer
     )]
-    pub initializer_token_account: Account<'info, TokenAccount>,
+    pub initializer_receiver_token_account: Account<'info, TokenAccount>,
 
     #[account(
         mut,
@@ -154,7 +154,31 @@ impl<'info> ClaimEscrow<'info> {
             transfer(initilizer_fee_ctx, initializer_fee)
         }
 
-        
+        let receiver_vault_bump = ctx.bumps.receiver_vault_authority;
+        let receiver_seeds = &[b"receiver_vault", escrow.key_as_ref(), &[receiver_vault_bump]];
+        let receiver_signer = &[&receiver_seeds[..]];
 
+        let receiver_to_initializer_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            TokenTransfer{
+                from: ctx.accounts.receiver_vault.to_account_info(),
+                to: ctx.accouts.initializer_receiver_token_account.to_account_info(),
+                authority: ctx.accounts.receiver_vault_authority.to_account_info(),
+            },
+            receiver_signer,
+        );
+        transfer(receiver_to_initializer_ctx, receiver_amount_after_fee);
 
+        if receiver_fee > 0 {
+            let receiver_fee_ctx = CpiContext::new(
+                ctx.accounts.token_program.to_account_info(),
+                TokenTranfer{
+                    from: ctx.accounts.receiver_vault.to_account_info(),
+                    to: ctx.accounts.receiver_fee_collector.to_account_info(),
+                    authority: ctx.accounts.receiver_vault_authority.to_account_info(),
+                },
+                receiver_signer,
+            );
+            tranfer(receiver_fee_ctx, receiver_fee)
+        }
 }
