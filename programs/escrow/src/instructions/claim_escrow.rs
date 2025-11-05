@@ -124,5 +124,24 @@ impl<'info> ClaimEscrow<'info> {
             },
         );
 
+        transfer(receiver_deposit_ctx, escrow.receiver_amount)?;
+
+        let initializer_vault_bump = ctx.bumps.initializer_vault_authority;
+        let initializer_seeds = &[b"initializer_vault", escrow.key_as_ref(), &[initializer_vault_bump]];
+        let initializer_signer = &[&initializer_seeds[..]];
+
+        let initializer_to_receiver_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            TokenTransfer{
+                from: ctx.accounts.initializer_vault.to_account_info(),
+                to: ctx.accounts.receiver_intializer_token_account.to_account_info(),
+                authority: ctx.accounts.initializer_vault.authority.to_account_info(),
+            },
+            initializer_signer,
+        );
+        transfer(initializer_to_receiver_ctx, initializer_amount_after_fee);
+
         
+
+
 }
