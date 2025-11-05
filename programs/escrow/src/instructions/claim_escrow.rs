@@ -139,7 +139,7 @@ impl<'info> ClaimEscrow<'info> {
             },
             initializer_signer,
         );
-        transfer(initializer_to_receiver_ctx, initializer_amount_after_fee);
+        transfer(initializer_to_receiver_ctx, initializer_amount_after_fee)?;
 
         if initializer_fee > 0 {
             let initializer_fee_ctx = CpiContext::new(
@@ -151,7 +151,7 @@ impl<'info> ClaimEscrow<'info> {
                 },
                 initializer_signer,
             );
-            transfer(initilizer_fee_ctx, initializer_fee)
+            transfer(initilizer_fee_ctx, initializer_fee)?;
         }
 
         let receiver_vault_bump = ctx.bumps.receiver_vault_authority;
@@ -167,7 +167,7 @@ impl<'info> ClaimEscrow<'info> {
             },
             receiver_signer,
         );
-        transfer(receiver_to_initializer_ctx, receiver_amount_after_fee);
+        transfer(receiver_to_initializer_ctx, receiver_amount_after_fee)?;
 
         if receiver_fee > 0 {
             let receiver_fee_ctx = CpiContext::new(
@@ -179,6 +179,16 @@ impl<'info> ClaimEscrow<'info> {
                 },
                 receiver_signer,
             );
-            tranfer(receiver_fee_ctx, receiver_fee)
+            tranfer(receiver_fee_ctx, receiver_fee)?;
         }
+
+        emit_cpi!(EscrowClaimed { 
+            intializer: escrow.intializer,
+            receiver: escrow.receiver,
+            mint: escrow.initializer_mint,
+            amount: escrow.initializer_amount,
+        });
+        
+        Ok(());
+    }
 }
