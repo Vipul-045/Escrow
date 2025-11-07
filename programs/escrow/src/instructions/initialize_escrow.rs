@@ -1,3 +1,7 @@
+use crate::events::EscrowInitialized;
+use crate::states::Escrow;
+use crate::errors::*;
+
 use anchor_lang::prelude::*;
 
 use anchor_spl::{
