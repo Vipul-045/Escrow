@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[error_code]
-pub enum EscrowEroor{
+pub enum EscrowError{
     #[msg("The escrow has already expired")]EscrowExpired,
 
     #[msg("The escrow is still active and canoot be cannot canceled yet")]EscrowStillActive,

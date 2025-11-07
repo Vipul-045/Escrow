@@ -12,14 +12,14 @@ use anchor_spl::token::{
     Transfer,
 };
 
-#[event(cpi)]
+#[event]
 #[derive(Accounts)]
 pub struct CancelEscrow <'info> {
     #[account(
         mut, 
         has_one: initializer,
         has_one: initializer_mint,
-        signer: initializer
+        signer: initializer,
     )]
     pub escrow: Account<'info, Account>,
 
@@ -77,7 +77,7 @@ impl<'info> CancelEscrow <'info>{
 
         transfer(cpi_ctx, escrow.initializer_amount)?;
 
-        emit_cpi!(EscrowCanceled{
+        emit!(EscrowCanceled{
             initializer: escrow.initializer,
             receiver: escrow.receiver,
             mint: escrow.initializer_mint,

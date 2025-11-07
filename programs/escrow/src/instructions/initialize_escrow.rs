@@ -1,6 +1,5 @@
 use crate::events::EscrowInitialized;
 use crate::states::Escrow;
-use crate::errors::*;
 
 use anchor_lang::prelude::*;
 
@@ -9,46 +8,46 @@ use anchor_spl::{
     token::{transfer, Mint, Token, TokenAccount, Transfer as TokenTransfer},
 };
 
-#[Derive(Accounts)]
-pub struct InitializeEscrow<'info> {
+#[derive(Accounts)]
+pub struct InitializeEscrow <'info> {
     #[account(
         init,
-        payer: initializer,
-        space: 8+32,
+        payer = initializer,
+        space = 8 + 32 + 32 + 32 + 8 + 32 + 8 + 2 + 32 + 8,
 )]
     pub escrow: Account<'info, Escrow>,
 
     #[account(mut)]
-    pub intializer: signer<'info>,
+    pub initializer: Signer<'info>,
 
     #[account(mut)]
     pub initializer_token_account: Account<'info, TokenAccount>,
 
     #[account(
-    seeds: [b"initializer_vault", escrow.key().as_ref()],
+    seeds = [b"initializer_vault", escrow.key().as_ref()],
     bump
 )]
     pub initializer_vault_authority: UncheckedAccount<'info>,
 
     #[account(
     init,
-    payer: initializer,
-    associated_token::mint: initializer_mint,
-    assosiated_toke::authority: initializer_vault_authority
+    payer = initializer,
+    associated_token::mint= initializer_mint,
+    associated_token::authority= initializer_vault_authority
 )]
     pub initializer_vault: Account<'info, TokenAccount>,
 
     #[account(
-    seeds: [b"receiver_vault", escrow.key().as.ref()],
+    seeds = [b"receiver_vault", escrow.key().as_ref()],
     bump
 )]
     pub receiver_vault_authority: UncheckedAccount<'info>,
 
     #[account(
     init,
-    payer: receiver,
-    associated_token::mint: receiver_mint,
-    associated_token::athority: receiver_vault_authority
+    payer = initializer,
+    associated_token::mint = receiver_mint,
+    associated_token::authority = receiver_vault_authority
 )]
     pub receiver_vault: Account<'info, TokenAccount>,
 
@@ -56,7 +55,7 @@ pub struct InitializeEscrow<'info> {
 
     pub receiver_mint: Account<'info, Mint>,
 
-    pub token_program: Program<'info, token>,
+    pub token_program: Program<'info, Token>,
 
     pub associated_token_program: Program<'info, AssociatedToken>,
 
@@ -67,25 +66,24 @@ pub struct InitializeEscrow<'info> {
 
 //Changes
 
-impl<'info> InitializeEscrow<'info> {
-    pub fn InitializeEscrow(
+    pub fn initialize_escrow(
         ctx: Context<InitializeEscrow>,
         initializer_amount: u64,
         receiver_amount: u64,
-        receiver: pubkey,
-        expiry: i16,
-        fee_basis_result: u16,
-        fee_collector: pubkey,
+        receiver: Pubkey,
+        expiry: i64,
+        fee_basis_points: u16,
+        fee_collector: Pubkey,
     ) -> Result<()> {
         let escrow = &mut ctx.accounts.escrow;
         let initializer = &ctx.accounts.initializer;
-        escrow.initializer = initializer.key;
+        escrow.initializer = initializer.key();
         escrow.receiver = receiver;
         escrow.initializer_mint = ctx.accounts.initializer_mint.key();
         escrow.initializer_amount = initializer_amount;
         escrow.receiver_mint = ctx.accounts.receiver_mint.key();
         escrow.receiver_amount = receiver_amount;
-        escrow.fee_basis_result = fee_basis_result;
+        escrow.fee_basis_points = fee_basis_points;
         escrow.fee_collector = fee_collector;
         escrow.expiry = expiry;
 
@@ -100,13 +98,12 @@ impl<'info> InitializeEscrow<'info> {
 
         transfer(cpi_ctx, initializer_amount)?;
 
-        emit_cpi!(EscrowInitialized {
-            initializer: initializer.key();
+        emit!(EscrowInitialized {
+            initializer: initializer.key(),
             receiver: receiver,
             mint: ctx.accounts.initializer_mint.key(),
             amount: initializer_amount,
             expiry,
         });
-        OK(())
+        Ok(())
     }
-}
