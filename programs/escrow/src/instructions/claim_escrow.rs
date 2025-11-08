@@ -1,10 +1,10 @@
-use crate::events::EscrowClaimed;
-use crate::states::Escrow;
-use crate::errors::*;
-
 use anchor_lang::prelude::*;
 
 use anchor_spl::token::{transfer, Token, Mint, TokenAccount, Transfer as TokenTransfer};
+
+use crate::events::EscrowClaimed;
+use crate::states::Escrow;
+use crate::errors::*;
 
 #[derive(Accounts)]
 pub struct ClaimEscrow <'info>{

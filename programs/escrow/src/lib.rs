@@ -11,26 +11,25 @@ pub use instructions::*;
 
 #[program]
 pub mod escrow {
-
     use super::*;
 
     pub fn initialize_escrow(
         ctx: Context<InitializeEscrow>,
         initializer_amount: u64,
         receiver_amount: u64,
-        expiry: i64,
         receiver: Pubkey,
+        expiry: i64,
         fee_basis_points: u16,
         fee_collector: Pubkey,
         ) -> Result<()> {
-            initialize_escrow::initialize_escrow(ctx, initializer_amount, receiver_amount, receiver, expiry, fee_basis_points, fee_collector)
+            instructions::initialize_escrow::initialize_escrow(ctx, initializer_amount, receiver_amount, receiver, expiry, fee_basis_points, fee_collector)
     }
 
     pub fn claim_escrow(ctx: Context<ClaimEscrow>) -> Result<()> {
-        claim_escrow::claim_escrow(ctx)
+            instructions::claim_escrow::claim_escrow(ctx)
     }
 
     pub fn cancel_escrow(ctx: Context<CancelEscrow>) -> Result<()>{
-        cancel_escrow::cancel_escrow(ctx)
+            instructions::cancel_escrow::cancel_escrow(ctx)
     }
 }

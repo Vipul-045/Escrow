@@ -1,8 +1,8 @@
+use anchor_lang::prelude::*;
+
 use crate::events::EscrowCanceled;
 use crate::states::Escrow;
 use crate::errors::*;
-
-use anchor_lang::prelude::*;
 
 use anchor_spl::token::{
     TokenAccount,

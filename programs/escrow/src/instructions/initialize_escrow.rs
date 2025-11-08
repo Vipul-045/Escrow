@@ -1,12 +1,12 @@
-use crate::events::EscrowInitialized;
-use crate::states::Escrow;
-
 use anchor_lang::prelude::*;
 
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{transfer, Mint, Token, TokenAccount, Transfer as TokenTransfer},
 };
+
+use crate::events::EscrowInitialized;
+use crate::states::Escrow;
 
 #[derive(Accounts)]
 pub struct InitializeEscrow <'info> {
