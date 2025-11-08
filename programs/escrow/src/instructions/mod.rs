@@ -5,4 +5,4 @@ pub mod cancel_escrow;
 pub use cancel_escrow::*;
 
 pub mod claim_escrow;
-pub use cancel_escrow::*;
+pub use claim_escrow::*;

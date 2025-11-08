@@ -9,25 +9,24 @@ use anchor_spl::token::{
     Token,
     Mint,
     Transfer as TokenTransfer,
-    Transfer,
+    transfer,
 };
 
-#[event]
 #[derive(Accounts)]
 pub struct CancelEscrow <'info> {
     #[account(
         mut, 
-        has_one: initializer,
-        has_one: initializer_mint,
-        signer: initializer,
+        has_one = initializer,
+        has_one = initializer_mint,
+        close = initializer,
     )]
-    pub escrow: Account<'info, Account>,
+    pub escrow: Account<'info, Escrow>,
 
-    #[accounts(mut)]
+    #[account(mut)]
     pub initializer: Signer<'info>,
 
     #[account(
-        seeds: [b"initializer_vault", escrow_key().as_ref()],
+        seeds = [b"initializer_vault", escrow.key().as_ref()],
         bump
     )]
     pub initializer_vault_authority: UncheckedAccount<'info>,
@@ -42,7 +41,7 @@ pub struct CancelEscrow <'info> {
     #[account(
         mut,
         associated_token::mint = initializer_mint,
-        associated_token::authority + initializer,
+        associated_token::authority = initializer,
     )]
     pub initializer_token_account: Account<'info, TokenAccount>,
 
@@ -51,15 +50,14 @@ pub struct CancelEscrow <'info> {
     pub token_program: Program<'info, Token>
 }
 
-impl<'info> CancelEscrow <'info>{
-    pub fn CancelEscrow(ctx: Context<CancelEscrow>) -> Result<()>{
+    pub fn cancel_escrow(ctx: Context<CancelEscrow>) -> Result<()>{
         let escrow = &ctx.accounts.escrow;
 
         let clock = Clock::get()?;
         require!(clock.unix_timestamp > escrow.expiry , EscrowError::EscrowNotExpired);
 
         let escrow_key = escrow.key();
-        let initializer_vault_bump = ctx.bumps.initializer.vault.authority;
+        let initializer_vault_bump = ctx.bumps.initializer_vault_authority;
         let seeds = &[b"initializer_vault", escrow_key.as_ref(), &[initializer_vault_bump]];
         let signer = &[&seeds[..]];
 
@@ -84,4 +82,3 @@ impl<'info> CancelEscrow <'info>{
             amount: escrow.initializer_amount,
         })
     }
-}
