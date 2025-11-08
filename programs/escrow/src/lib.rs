@@ -22,11 +22,15 @@ pub mod escrow {
         receiver: Pubkey,
         fee_basis_points: u16,
         fee_collector: Pubkey,
-        )-> Result<()> {
-            initialize_escrow(ctx, initializer_amount, receiver_amount, expiry, receiver, fee_basis_points, fee_collector)
-        
+        ) -> Result<()> {
+            initialize_escrow::initialize_escrow(ctx, initializer_amount, receiver_amount, receiver, expiry, fee_basis_points, fee_collector)
+    }
+
+    pub fn claim_escrow(ctx: Context<ClaimEscrow>) -> Result<()> {
+        claim_escrow::claim_escrow(ctx)
+    }
+
+    pub fn cancel_escrow(ctx: Context<CancelEscrow>) -> Result<()>{
+        cancel_escrow::cancel_escrow(ctx)
     }
 }
-
-#[derive(Accounts)]
-pub struct Initialize {}
