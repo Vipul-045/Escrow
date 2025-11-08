@@ -36,7 +36,7 @@ pub struct CancelEscrow <'info> {
         associated_token::mint = initializer_mint,
         associated_token::authority = initializer_vault_authority,
     )]
-    pub initializer_vault: UncheckedAccount<'info>,
+    pub initializer_vault: Account<'info, TokenAccount>,
 
     #[account(
         mut,
@@ -50,7 +50,7 @@ pub struct CancelEscrow <'info> {
     pub token_program: Program<'info, Token>
 }
 
-    pub fn cancel_escrow(ctx: Context<CancelEscrow>) -> Result<()>{
+    pub fn cancel_escrow(ctx: Context<CancelEscrow>) -> Result<()> {
         let escrow = &ctx.accounts.escrow;
 
         let clock = Clock::get()?;
@@ -80,5 +80,6 @@ pub struct CancelEscrow <'info> {
             receiver: escrow.receiver,
             mint: escrow.initializer_mint,
             amount: escrow.initializer_amount,
-        })
+        });
+        Ok(())
     }
