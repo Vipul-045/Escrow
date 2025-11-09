@@ -29,6 +29,7 @@ pub struct CancelEscrow <'info> {
         seeds = [b"initializer_vault", escrow.key().as_ref()],
         bump
     )]
+    /// CHECK: PDA authority for the initializer vault.
     pub initializer_vault_authority: UncheckedAccount<'info>,
 
     #[account(
