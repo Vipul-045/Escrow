@@ -41,6 +41,7 @@ pub struct ClaimEscrow <'info>{
         seeds = [b"receiver_vault", escrow.key().as_ref()],
         bump
     )]
+    /// CHECK: PDA authority for the initializer vault.
     pub receiver_vault_authority: UncheckedAccount<'info>,
 
     #[account(
@@ -71,6 +72,7 @@ pub struct ClaimEscrow <'info>{
     )]
     pub initializer_receiver_token_account: Account<'info, TokenAccount>,
 
+    /// CHECK: PDA authority for the initializer vault.
     pub fee_collector: UncheckedAccount<'info>,
 
     #[account(
