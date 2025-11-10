@@ -4,13 +4,11 @@ use crate::events::EscrowCanceled;
 use crate::states::Escrow;
 use crate::errors::*;
 
-use anchor_spl::token::{
-    TokenAccount,
-    Token,
-    Mint,
-    Transfer as TokenTransfer,
-    transfer,
+use anchor_spl::{
+    token::{ Transfer ,Token, transfer },
+    token_interface::{ Mint, TokenAccount}
 };
+
 
 #[derive(Accounts)]
 pub struct CancelEscrow <'info> {
@@ -37,16 +35,16 @@ pub struct CancelEscrow <'info> {
         associated_token::mint = initializer_mint,
         associated_token::authority = initializer_vault_authority,
     )]
-    pub initializer_vault: Account<'info, TokenAccount>,
+    pub initializer_vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         mut,
         associated_token::mint = initializer_mint,
         associated_token::authority = initializer,
     )]
-    pub initializer_token_account: Account<'info, TokenAccount>,
+    pub initializer_token_account: InterfaceAccount<'info, TokenAccount>,
 
-    pub initializer_mint: Account<'info, Mint>,
+    pub initializer_mint: InterfaceAccount<'info, Mint>,
 
     pub token_program: Program<'info, Token>
 }
@@ -62,7 +60,7 @@ pub struct CancelEscrow <'info> {
         let seeds = &[b"initializer_vault", escrow_key.as_ref(), &[initializer_vault_bump]];
         let signer = &[&seeds[..]];
 
-        let cpi_accounts = TokenTransfer {
+        let cpi_accounts = Transfer {
             from: ctx.accounts.initializer_vault.to_account_info(),
             to: ctx.accounts.initializer_token_account.to_account_info(),
             authority: ctx.accounts.initializer_vault_authority.to_account_info(),

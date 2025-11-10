@@ -1,6 +1,9 @@
 use anchor_lang::prelude::*;
 
-use anchor_spl::token::{transfer, Token, Mint, TokenAccount, Transfer as TokenTransfer};
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{transfer ,Token ,Transfer, Mint, TokenAccount}
+};
 
 use crate::events::EscrowClaimed;
 use crate::states::Escrow;
@@ -11,9 +14,7 @@ pub struct ClaimEscrow <'info>{
     #[account(
         mut,
         has_one = initializer,
-        has_one = initializer_mint,
         has_one = receiver,
-        has_one = receiver_mint,
         close = initializer
     )]
     pub escrow: Account<'info, Escrow>,
@@ -23,6 +24,21 @@ pub struct ClaimEscrow <'info>{
 
     #[account(mut)]
     pub receiver: Signer<'info>,
+
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    
+    pub system_program: Program<'info, System>,
+
+    #[account(
+        constraint = initializer_mint.key() == escrow.initializer_mint
+    )]
+    pub initializer_mint: Account<'info, Mint>,
+
+    #[account(
+        constraint = receiver_mint.key() == escrow.receiver_mint
+    )]
+    pub receiver_mint: Account<'info, Mint>,
+
 
     #[account(
         seeds = [b"initializer_vault", escrow.key().as_ref()],
@@ -79,20 +95,16 @@ pub struct ClaimEscrow <'info>{
     #[account(
         mut,
         associated_token::mint = initializer_mint,
-        associated_token::authority = escrow.fee_collector
+        associated_token::authority = fee_collector
     )]
     pub initializer_fee_collector: Account<'info, TokenAccount>,
 
     #[account(
         mut,
         associated_token::mint = receiver_mint,
-        associated_token::authority = escrow.fee_collector
+        associated_token::authority = fee_collector
     )]
     pub receiver_fee_collector: Account<'info, TokenAccount>,
-
-    pub initializer_mint: Account<'info, Mint>,
-
-    pub receiver_mint: Account<'info, Mint>,
 
     pub token_program: Program<'info, Token>
 
@@ -124,9 +136,9 @@ pub struct ClaimEscrow <'info>{
 
         let receiver_deposit_ctx = CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
-            TokenTransfer{
+            Transfer{
                 from: ctx.accounts.receiver_token_account.to_account_info(),
-                to: ctx.accounts.receiver_token_account.to_account_info(),
+                to: ctx.accounts.receiver_vault.to_account_info(),
                 authority: ctx.accounts.receiver.to_account_info(),
             },
         );
@@ -139,7 +151,7 @@ pub struct ClaimEscrow <'info>{
 
         let initializer_to_receiver_ctx = CpiContext::new_with_signer(
             ctx.accounts.token_program.to_account_info(),
-            TokenTransfer{
+            Transfer{
                 from: ctx.accounts.initializer_vault.to_account_info(),
                 to: ctx.accounts.receiver_initializer_token_account.to_account_info(),
                 authority: ctx.accounts.initializer_vault_authority.to_account_info(),
@@ -151,7 +163,7 @@ pub struct ClaimEscrow <'info>{
         if initializer_fee > 0 {
             let initializer_fee_ctx = CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info(),
-                TokenTransfer{
+                Transfer{
                     from: ctx.accounts.initializer_vault.to_account_info(),
                     to: ctx.accounts.initializer_fee_collector.to_account_info(),
                     authority: ctx.accounts.initializer_vault_authority.to_account_info(),
@@ -167,7 +179,7 @@ pub struct ClaimEscrow <'info>{
 
         let receiver_to_initializer_ctx = CpiContext::new_with_signer(
             ctx.accounts.token_program.to_account_info(),
-            TokenTransfer{
+            Transfer{
                 from: ctx.accounts.receiver_vault.to_account_info(),
                 to: ctx.accounts.initializer_receiver_token_account.to_account_info(),
                 authority: ctx.accounts.receiver_vault_authority.to_account_info(),
@@ -179,7 +191,7 @@ pub struct ClaimEscrow <'info>{
         if receiver_fee > 0 {
             let receiver_fee_ctx = CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info(),
-                TokenTransfer{
+                Transfer{
                     from: ctx.accounts.receiver_vault.to_account_info(),
                     to: ctx.accounts.receiver_fee_collector.to_account_info(),
                     authority: ctx.accounts.receiver_vault_authority.to_account_info(),
