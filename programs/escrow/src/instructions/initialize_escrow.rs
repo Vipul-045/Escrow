@@ -2,8 +2,7 @@ use anchor_lang::prelude::*;
 
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{transfer, Transfer, Token},
-    token_interface::{ Mint, TokenAccount },
+    token::{transfer, Transfer, Token, Mint, TokenAccount}
 };
 
 use crate::events::EscrowInitialized;
@@ -22,7 +21,7 @@ pub struct InitializeEscrow <'info> {
     pub initializer: Signer<'info>,
 
     #[account(mut)]
-    pub initializer_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub initializer_token_account: Account<'info, TokenAccount>,
 
     #[account(
     seeds = [b"initializer_vault", escrow.key().as_ref()],
@@ -37,7 +36,7 @@ pub struct InitializeEscrow <'info> {
     associated_token::mint= initializer_mint,
     associated_token::authority= initializer_vault_authority
 )]
-    pub initializer_vault: InterfaceAccount<'info, TokenAccount>,
+    pub initializer_vault: Account<'info, TokenAccount>,
 
     #[account(
     seeds = [b"receiver_vault", escrow.key().as_ref()],
@@ -52,11 +51,11 @@ pub struct InitializeEscrow <'info> {
     associated_token::mint = receiver_mint,
     associated_token::authority = receiver_vault_authority
 )]
-    pub receiver_vault: InterfaceAccount<'info, TokenAccount>,
+    pub receiver_vault: Account<'info, TokenAccount>,
 
-    pub initializer_mint: InterfaceAccount<'info, Mint>,
+    pub initializer_mint: Account<'info, Mint>,
 
-    pub receiver_mint: InterfaceAccount<'info, Mint>,
+    pub receiver_mint: Account<'info, Mint>,
 
     pub token_program: Program<'info, Token>,
 
