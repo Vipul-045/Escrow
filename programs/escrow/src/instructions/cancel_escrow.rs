@@ -5,8 +5,7 @@ use crate::states::Escrow;
 use crate::errors::*;
 
 use anchor_spl::{
-    token::{ Transfer ,Token, transfer },
-    token_interface::{ Mint, TokenAccount}
+    token::{ Transfer ,Token, transfer, Mint, TokenAccount }
 };
 
 
@@ -35,16 +34,16 @@ pub struct CancelEscrow <'info> {
         associated_token::mint = initializer_mint,
         associated_token::authority = initializer_vault_authority,
     )]
-    pub initializer_vault: InterfaceAccount<'info, TokenAccount>,
+    pub initializer_vault: Account<'info, TokenAccount>,
 
     #[account(
         mut,
         associated_token::mint = initializer_mint,
         associated_token::authority = initializer,
     )]
-    pub initializer_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub initializer_token_account: Account<'info, TokenAccount>,
 
-    pub initializer_mint: InterfaceAccount<'info, Mint>,
+    pub initializer_mint: Account<'info, Mint>,
 
     pub token_program: Program<'info, Token>
 }
