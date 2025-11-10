@@ -22,14 +22,14 @@ pub mod escrow {
         fee_basis_points: u16,
         fee_collector: Pubkey,
         ) -> Result<()> {
-            instructions::initialize_escrow::initialize_escrow(ctx, initializer_amount, receiver_amount, receiver, expiry, fee_basis_points, fee_collector)
+            instructions::initialize_escrow(ctx, initializer_amount, receiver_amount, receiver, expiry, fee_basis_points, fee_collector)
     }
 
     pub fn claim_escrow(ctx: Context<ClaimEscrow>) -> Result<()> {
-            instructions::claim_escrow::claim_escrow(ctx)
+            instructions::claim_escrow(ctx)
     }
 
     pub fn cancel_escrow(ctx: Context<CancelEscrow>) -> Result<()>{
-            instructions::cancel_escrow::cancel_escrow(ctx)
+            instructions::cancel_escrow(ctx)
     }
 }

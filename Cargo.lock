@@ -523,6 +523,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "clock"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f3f1665fbb22acaba8d247425d788086f165f9900f6fc7d13e864a2516b82f0"
+
+[[package]]
 name = "console_error_panic_hook"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -656,6 +662,7 @@ version = "0.1.0"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
+ "clock",
 ]
 
 [[package]]
