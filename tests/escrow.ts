@@ -1,16 +1,21 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { Escrow } from "../target/types/escrow";
+import {
+  PublicKey,
+  SystemProgram,
+  SYSVAR_RENT_PUBKEY,
+  Keypair,
+} from "@solana/web3.js";
+import {
+  TOKEN_PROGRAM_ID,
+  MINT_SIZE,
+  createMint,
+  createAccount,
+  mintTo,
+  getAccount,
+  getOrCreateAssociatedTokenAccount,
+  createAssociatedTokenAccount,
+} from "@solana/spl-token";
 
-describe("escrow", () => {
-  // Configure the client to use the local cluster.
-  anchor.setProvider(anchor.AnchorProvider.env());
 
-  const program = anchor.workspace.escrow as Program<Escrow>;
-
-  it("Is initialized!", async () => {
-    // Add your test here.
-    const tx = await program.methods.initialize().rpc();
-    console.log("Your transaction signature", tx);
-  });
-});
