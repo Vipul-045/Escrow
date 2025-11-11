@@ -17,5 +17,23 @@ import {
   getOrCreateAssociatedTokenAccount,
   createAssociatedTokenAccount,
 } from "@solana/spl-token";
+const { assert } = require("chai");
+
+describe("escrow", () => {
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
+
+  const program = anchor.workspace.Escrow as Program<Escrow>;
+
+  let mint: PublicKey;
+  let initializerTokenAccount: PublicKey;
+  let receiverTokenAccount: PublicKey;
+  let escrowKeypair: Keypair;
+  let vaultAuthority: PublicKey;
+  let vault: PublicKey;
+  let receiver: Keypair
+
+  
 
 
+})
