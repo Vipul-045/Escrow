@@ -45,6 +45,19 @@ describe("escrow", () => {
       null,
       6
     )
+
+    //Create Initializer token account
+    initializerTokenAccount = await createAccount(
+      provider.connection,
+      (provider.wallet as any).payer,
+      mint,
+      provider.publicKey
+    )
+
+    
+
+
+
   })
 
 })
