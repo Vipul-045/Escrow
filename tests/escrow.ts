@@ -33,7 +33,18 @@ describe("escrow", () => {
   let vault: PublicKey;
   let receiver: Keypair
 
-  
+  const escrowAmount = new anchor.BN(100_000_000); 
+  const expiry = new anchor.BN(Math.floor(Date.now()/1000)+60*5);
 
+  before(async() => {
+    //Create Mint
+    mint = await createMint(
+      provider.connection,
+      (provider.wallet as any).payer,
+      provider.publicKey,
+      null,
+      6
+    )
+  })
 
 })
