@@ -33,10 +33,10 @@ describe("escrow", () => {
   let vault: PublicKey;
   let receiver: Keypair
 
-  const escrowAmount = new anchor.BN(100_000_000); 
-  const expiry = new anchor.BN(Math.floor(Date.now()/1000)+60*5);
+  const escrowAmount = new anchor.BN(100_000_000);
+  const expiry = new anchor.BN(Math.floor(Date.now() / 1000) + 60 * 5);
 
-  before(async() => {
+  before(async () => {
     //Create Mint
     mint = await createMint(
       provider.connection,
@@ -66,16 +66,46 @@ describe("escrow", () => {
 
     receiver = Keypair.generate();
 
-    const sig = await provider.connection.requestAirdrop(
+    const signature = await provider.connection.requestAirdrop(
       receiver.publicKey,
       1e9
     );
-    await provider.connection.confirmTransaction(sig);
+
+    const latestBlockhash = await provider.connection.getLatestBlockhash();
+
+    await provider.connection.confirmTransaction({
+      signature,
+      blockhash: latestBlockhash.blockhash,
+      lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+    });
+
+    receiverTokenAccount = await createAccount(
+      provider.connection,
+      (provider.wallet as any).payer,
+      mint,
+      receiver.publicKey
+    )
+
+    escrowKeypair = Keypair.generate();
+
+    [vaultAuthority] = await PublicKey.findProgramAddressSync(
+      [Buffer.from("vault"), escrowKeypair.publicKey.toBuffer()],
+      program.programId,
+    )
+
+    const vaultSeedConst = Buffer.from([
+      231, 242, 71, 130, 11, 40, 23, 98,
+      134, 142, 64, 33, 218, 211, 26, 221,
+      220, 102, 241, 246, 3, 229, 91, 35,
+      184, 32, 193, 148, 50, 253, 3, 93
+    ]);
+
+    [vault] = await PublicKey.findProgramAddressSync(
+      [vaultAuthority.toBuffer(), vaultSeedConst, mint.toBuffer()],
+      program.programId,
+    );
+  });
 
 
-
-
-
-  })
 
 })
