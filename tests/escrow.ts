@@ -54,7 +54,25 @@ describe("escrow", () => {
       provider.publicKey
     )
 
-    
+    //Mint some tokens to initializer
+    await mintTo(
+      provider.connection,
+      (provider.wallet as any).payer,
+      mint,
+      initializerTokenAccount,
+      provider.publicKey,
+      1_000_000_000
+    )
+
+    receiver = Keypair.generate();
+
+    const sig = await provider.connection.requestAirdrop(
+      receiver.publicKey,
+      1e9
+    );
+    await provider.connection.confirmTransaction(sig);
+
+
 
 
 
