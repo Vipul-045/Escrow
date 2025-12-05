@@ -11,15 +11,6 @@ Escrow-Anchor is a smart contract (on Solana, using the Anchor framework) that f
 - **Initialize Escrow**: The maker deposits token A into escrow, specifying the amount and the token B they wish to receive.
 - **Atomic Exchange**: The taker deposits token B; the contract swaps tokens between parties, ensuring both sides are fully satisfied or the transaction fails.
 - **Refund Option**: If the deal is not finalized, the maker can refund their tokens from escrow.
-- **Event Emissions**: Emits events (`MakeEvent`, `TakeEvent`, `RefundEvent`) for on-chain monitoring and integration.
-
-## How It Works
-
-1. **Make**: The maker calls the `make` instruction, depositing a specified amount of token A and specifying how much token B they want in return. An escrow account is initialized to store state and funds.
-   
-2. **Take**: The taker calls the `take` instruction, depositing the required amount of token B. Upon success, token A is sent from escrow to the taker, and token B is sent to the maker. The escrow vault is closed.
-
-3. **Refund**: If no taker fulfills the offer, the maker can call `refund` to retrieve their token A from escrow and close the vault.
 
 ### Main Data Structure
 
