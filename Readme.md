@@ -9,8 +9,8 @@ Escrow-Anchor is a smart contract (on Solana, using the Anchor framework) that f
 ## Features
 
 - **Initialize Escrow**: The maker deposits token A into escrow, specifying the amount and the token B they wish to receive.
-- **Atomic Exchange**: The taker deposits token B; the contract swaps tokens between parties, ensuring both sides are fully satisfied or the transaction fails.
-- **Refund Option**: If the deal is not finalized, the maker can refund their tokens from escrow.
+- **Claim Escrow**: The taker deposits token B; the contract swaps tokens between parties, ensuring both sides are fully satisfied or the transaction fails.
+- **Cancel Escrow**: If the deal is not finalized, the maker can refund their tokens from escrow.
 
 ### Main Data Structure
 
@@ -30,8 +30,8 @@ pub struct Escrow {
 ### Clone the Repo
 
 ```bash
-git clone https://github.com/prince981620/escrow-anchor.git
-cd escrow-anchor
+https://github.com/Vipul-045/Escrow.git
+cd Escrow
 ```
 
 ### Install Dependencies
@@ -62,6 +62,6 @@ anchor test
 ## Key Files
 
 - `programs/escrow-anchor/src/lib.rs`: Anchor program logic and instruction definitions.
-- `programs/escrow-anchor/src/instructions/`: Individual instruction handlers (`make`, `take`, `refund`).
+- `programs/escrow-anchor/src/instructions/`: Individual instruction handlers (`initialize_escrow`, `claim_escrow`, `cancel_escrow`).
 - `programs/escrow-anchor/src/state.rs`: Escrow account state.
-- `tests/escrow-anchor.ts`: Integration tests covering end-to-end flows.
+- `tests/escrow.ts`: Integration tests covering end-to-end flows.
