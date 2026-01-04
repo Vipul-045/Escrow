@@ -55,9 +55,9 @@ anchor test
 ## Example Flow
 
 - **Airdrop and mint tokens** for maker and taker accounts.
-- Maker creates escrow by calling `make`, funds are deposited.
-- Taker fulfills the deal by calling `take`, token swap occurs.
-- If no taker, maker can call `refund` to reclaim their tokens.
+- Initialize_escrow creates escrow by calling 'initialize_escrow', funds are deposited.
+- Claim_escrow fulfills the deal by calling `claim_escrow`, token swap occurs.
+- If no taker, maker can call `cancel_escrow` to reclaim their tokens.
 
 ## Key Files
 
